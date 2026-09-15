@@ -1,0 +1,117 @@
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id           String       @id @default(cuid())
+  name         String
+  email        String       @unique
+  password     String
+  role         String       @default("BUYER") // SUPER_ADMIN, SELLER, BUYER
+  avatar       String?
+  bio          String?
+  isVerified   Boolean      @default(true)
+  isBanned     Boolean      @default(false)
+  storeName    String?
+  walletBalance Float       @default(0)
+  bankDetails  String?      // JSON string of account info
+  upiId        String?
+  products     Product[]
+  orders       Order[]
+  withdrawals  Withdrawal[]
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+}
+
+model Product {
+  id              String          @id @default(cuid())
+  slug            String          @unique
+  title           String
+  description     String
+  shortDesc       String
+  price           Float
+  coverImage      String
+  fileKey         String          // Storage reference path or key
+  fileSize        Int             // Bytes
+  pageCount       Int?
+  category        String          @default("General")
+  tags            String          @default("") // Comma-separated tags
+  language        String          @default("English")
+  previewUrl      String?
+  status          String          @default("APPROVED") // PENDING, APPROVED, REJECTED
+  rejectionReason String?
+  totalSales      Int             @default(0)
+  totalRevenue    Float           @default(0)
+  shareKey        String          @unique @default(cuid())
+  sellerId        String
+  seller          User            @relation(fields: [sellerId], references: [id], onDelete: Cascade)
+  orders          Order[]
+  downloadTokens  DownloadToken[]
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+}
+
+model Order {
+  id                String         @id @default(cuid())
+  buyerId           String?
+  buyer             User?          @relation(fields: [buyerId], references: [id])
+  buyerName         String
+  buyerEmail        String
+  productId         String
+  product           Product        @relation(fields: [productId], references: [id], onDelete: Cascade)
+  amount            Float
+  platformFee       Float
+  sellerEarning     Float
+  razorpayOrderId   String         @unique
+  razorpayPaymentId String?
+  status            String         @default("PENDING") // PENDING, PAID, FAILED, REFUNDED
+  downloadToken     DownloadToken?
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+}
+
+model DownloadToken {
+  id            String    @id @default(cuid())
+  token         String    @unique @default(cuid())
+  orderId       String    @unique
+  order         Order     @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId     String
+  product       Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
+  expiresAt     DateTime
+  downloadCount Int       @default(0)
+  maxDownloads  Int       @default(5)
+  createdAt     DateTime  @default(now())
+}
+
+model Commission {
+  id              String   @id @default(cuid())
+  platformPercent Float    @default(15.0)
+  sellerPercent   Float    @default(85.0)
+  isDefault       Boolean  @default(true)
+  updatedAt       DateTime @updatedAt
+}
+
+model Withdrawal {
+  id             String    @id @default(cuid())
+  sellerId       String
+  seller         User      @relation(fields: [sellerId], references: [id], onDelete: Cascade)
+  amount         Float
+  status         String    @default("PENDING") // PENDING, APPROVED, COMPLETED, REJECTED
+  method         String    @default("UPI") // UPI, BANK
+  accountDetails String    // JSON string
+  adminNote      String?
+  createdAt      DateTime  @default(now())
+  processedAt    DateTime?
+}
+
+model PlatformSettings {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  value     String
+  updatedAt DateTime @updatedAt
+}
