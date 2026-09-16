@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { FileText, Zap, Star } from 'lucide-react';
+import { FileText, Zap, Star, TrendingUp } from 'lucide-react';
 import { BuyModal } from './BuyModal';
 
 interface ProductCardProps {
@@ -19,120 +19,96 @@ interface ProductCardProps {
     seller?: {
       name: string;
       storeName?: string | null;
+      avatar?: string | null;
     };
   };
 }
 
 export function ProductCard({ product }: ProductCardProps) {
   const [showModal, setShowModal] = useState(false);
+  const [hovered, setHovered] = useState(false);
+
+  const sales = product.totalSales || 0;
+  const reviews = Math.max(sales * 3, 8);
+  const isHot = sales > 20;
 
   return (
     <>
-      <div className="glow-card" style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-        <div style={{ position: 'relative', height: '220px', overflow: 'hidden', background: '#12121e' }}>
-          <img
-            src={product.coverImage}
-            alt={product.title}
-            style={{
-              width: '100%',
-              height: '100%',
-              objectFit: 'cover',
-              transition: 'transform 0.4s ease',
-            }}
-            onMouseEnter={(e) => (e.currentTarget.style.transform = 'scale(1.05)')}
-            onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1)')}
-          />
-          <div style={{
-            position: 'absolute',
-            top: '0.75rem',
-            left: '0.75rem',
-            display: 'flex',
-            gap: '0.4rem',
-          }}>
-            <span className="badge badge-primary">{product.category}</span>
+      <div
+        className="product-card"
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
+      >
+        {/* Entire card is a link */}
+        <Link href={`/product/${product.slug}`} className="product-card-link" aria-label={product.title}>
+          {/* Cover image area */}
+          <div className="product-card-image-wrap">
+            <img
+              src={product.coverImage}
+              alt={product.title}
+              className="product-card-image"
+              style={{ transform: hovered ? 'scale(1.06)' : 'scale(1)' }}
+            />
+            {/* Gradient overlay */}
+            <div className="product-card-overlay" />
+
+            {/* Badges top-left */}
+            <div className="product-card-badges">
+              <span className="pc-badge pc-badge-cat">{product.category}</span>
+              {isHot && (
+                <span className="pc-badge pc-badge-hot">
+                  <TrendingUp size={10} />
+                  Hot
+                </span>
+              )}
+            </div>
+
+            {/* Price badge bottom-right */}
+            <div className="product-card-price">₹{product.price}</div>
           </div>
 
-          <div style={{
-            position: 'absolute',
-            bottom: '0.75rem',
-            right: '0.75rem',
-            background: 'rgba(10, 10, 18, 0.85)',
-            backdropFilter: 'blur(8px)',
-            padding: '0.35rem 0.75rem',
-            borderRadius: '8px',
-            fontSize: '1.1rem',
-            fontWeight: 800,
-            color: 'var(--brand-accent)',
-            border: '1px solid rgba(0, 212, 170, 0.3)',
-          }}>
-            ₹{product.price}
-          </div>
-        </div>
-
-        <div style={{ padding: '1.25rem', display: 'flex', flexDirection: 'column', flex: 1 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.78rem', color: 'var(--text-muted)', marginBottom: '0.5rem' }}>
-            {product.pageCount && (
-              <span style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
-                <FileText size={14} />
-                {product.pageCount} Pages (PDF)
+          {/* Card body */}
+          <div className="product-card-body">
+            <div className="product-card-meta">
+              {product.pageCount && (
+                <span className="product-card-meta-item">
+                  <FileText size={12} />
+                  {product.pageCount}p
+                </span>
+              )}
+              <span className="product-card-meta-item product-card-rating">
+                <Star size={12} fill="#FFB347" color="#FFB347" />
+                4.9 <span style={{ color: 'var(--text-subtle)' }}>({reviews})</span>
               </span>
-            )}
-            <span>•</span>
-            <span style={{ display: 'flex', alignItems: 'center', gap: '0.2rem', color: '#FFB347' }}>
-              <Star size={13} fill="#FFB347" />
-              4.9 ({(product.totalSales || 12) * 3} ratings)
-            </span>
-          </div>
-
-          <Link href={`/product/${product.slug}`}>
-            <h3 style={{
-              fontSize: '1.1rem',
-              fontWeight: 700,
-              lineHeight: 1.4,
-              marginBottom: '0.5rem',
-              transition: 'color 0.2s',
-            }}>
-              {product.title}
-            </h3>
-          </Link>
-
-          <p style={{
-            fontSize: '0.86rem',
-            color: 'var(--text-muted)',
-            lineHeight: 1.5,
-            marginBottom: '1.25rem',
-            flex: 1,
-            display: '-webkit-box',
-            WebkitLineClamp: 2,
-            WebkitBoxOrient: 'vertical',
-            overflow: 'hidden',
-          }}>
-            {product.shortDesc}
-          </p>
-
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            paddingTop: '0.85rem',
-            borderTop: '1px solid var(--border-color)',
-            marginTop: 'auto',
-          }}>
-            <div style={{ fontSize: '0.8rem', color: 'var(--text-subtle)' }}>
-              By <span style={{ color: 'var(--text-primary)', fontWeight: 600 }}>{product.seller?.storeName || product.seller?.name || 'Verified Author'}</span>
+              {sales > 0 && (
+                <span className="product-card-meta-item" style={{ marginLeft: 'auto' }}>
+                  {sales} sold
+                </span>
+              )}
             </div>
 
-            <div style={{ display: 'flex', gap: '0.5rem' }}>
-              <Link href={`/product/${product.slug}`} className="btn btn-sm btn-secondary">
-                Details
-              </Link>
-              <button onClick={() => setShowModal(true)} className="btn btn-sm btn-primary">
-                <Zap size={14} />
-                Buy Now
-              </button>
+            <h3 className="product-card-title">{product.title}</h3>
+            <p className="product-card-desc">{product.shortDesc}</p>
+
+            <div className="product-card-footer">
+              <div className="product-card-author">
+                {product.seller?.avatar && (
+                  <img src={product.seller.avatar} alt="" className="product-card-avatar" />
+                )}
+                <span>{product.seller?.storeName || product.seller?.name || 'Verified Author'}</span>
+              </div>
             </div>
           </div>
-        </div>
+        </Link>
+
+        {/* Buy button overlays at bottom — prevents link navigation */}
+        <button
+          className="product-card-buy-btn"
+          onClick={(e) => { e.preventDefault(); e.stopPropagation(); setShowModal(true); }}
+        >
+          <Zap size={14} />
+          Buy Now
+        </button>
       </div>
 
       {showModal && (

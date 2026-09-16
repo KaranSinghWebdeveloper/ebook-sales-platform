@@ -43,6 +43,7 @@ model Product {
   tags            String          @default("") // Comma-separated tags
   language        String          @default("English")
   previewUrl      String?
+  galleryImages   String       @default("") // JSON array of image URLs (up to 5)
   status          String          @default("APPROVED") // PENDING, APPROVED, REJECTED
   rejectionReason String?
   totalSales      Int             @default(0)

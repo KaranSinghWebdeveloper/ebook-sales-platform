@@ -36,6 +36,11 @@ export default function SellerDashboardPage() {
       const prodData = await prodRes.json();
       const earnData = await earnRes.json();
 
+      if (prodRes.status === 401 || earnRes.status === 401) {
+        window.location.href = '/login';
+        return;
+      }
+
       if (prodData.products) setProducts(prodData.products);
       if (earnData) setEarnings(earnData);
     } catch (err) {

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ShieldCheck, CheckCircle2, Download, AlertCircle, Loader2 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
@@ -21,6 +21,21 @@ export function BuyModal({ product, onClose }: BuyModalProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [downloadToken, setDownloadToken] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (downloadToken) {
+      const timer = setTimeout(() => {
+        const link = document.createElement('a');
+        link.href = `/api/download/${downloadToken}`;
+        link.download = 'download';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }, 500);
+      return () => clearTimeout(timer);
+    }
+  }, [downloadToken]);
+
 
   const handleCheckout = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -173,7 +188,7 @@ export function BuyModal({ product, onClose }: BuyModalProps) {
             </a>
 
             <div style={{ fontSize: '0.8rem', color: 'var(--text-subtle)' }}>
-              Link is valid for 72 hours and up to 5 downloads. Receipt queued for {email}.
+              Link is valid for 72 hours and for 1 download only. Receipt queued for {email}.
             </div>
           </div>
         ) : (

@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { BookOpen, ShoppingBag, ShieldCheck, LayoutDashboard, LogIn, UserPlus, LogOut } from 'lucide-react';
+import { BookOpen, ShoppingBag, ShieldCheck, LayoutDashboard, LogIn, UserPlus, LogOut, User } from 'lucide-react';
 
 interface NavUser {
   id: string;
@@ -102,6 +102,10 @@ export function Navbar({ siteName = 'DigiVault' }: { siteName?: string }) {
                 Seller Dashboard (₹{user.walletBalance || 0})
               </Link>
             )}
+
+            <Link href="/profile" className="btn btn-sm btn-secondary" title="My Profile" style={{ padding: '0.45rem 0.65rem' }}>
+              <User size={16} color="var(--text-muted)" />
+            </Link>
 
             <button onClick={handleLogout} className="btn btn-sm btn-secondary" title="Logout" style={{ padding: '0.45rem 0.65rem' }}>
               <LogOut size={16} color="var(--text-muted)" />

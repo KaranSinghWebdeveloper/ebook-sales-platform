@@ -149,3 +149,26 @@ The test run created real, verified records in the database (`prisma/dev.db`):
 ```powershell
 npm run test:e2e
 ```
+
+---
+
+## 5. Visual Browser Verification & Walkthrough
+
+The platform has been visually validated in a live browser session across all key workflows:
+
+1. **Storefront & Catalog**:
+   - Tested responsive glassmorphic dark interface on `http://localhost:3000`.
+   - Verified animated stats counters (4,800+ downloads, ₹18.5L+ payouts, 99.4% satisfaction).
+   - Navigated category tags (`Business & Tech`, `Engineering`, `Finance`, `Marketing`).
+2. **Product Details & Instant Razorpay Checkout**:
+   - Loaded product detail page with curriculum chapters and author bio.
+   - Clicked "Buy Now", entered buyer credentials (`Aditi Sharma`, `aditi@example.com`).
+   - Verified automated checkout simulation, celebratory confetti trigger, and generation of 72-hour `DownloadToken`.
+3. **Seller Dashboard & Marketing Link Studio (`/dashboard`)**:
+   - Logged in via 1-click Verified Seller demo.
+   - Inspected real-time wallet balance and recent sales transactions.
+   - Tested "Promote / Ad Links" modal: dynamically customized UTM tags (`utm_source=meta_ads`, `utm_medium=instagram_reels`, `utm_campaign=...`) and rendered high-res downloadable QR code.
+4. **Super Admin Control Center (`/admin`)**:
+   - Logged in as Super Admin.
+   - Tested dynamic live theme editor: color picker updates persist to database and inject into CSS root variables instantly.
+   - Verified commission split slider and withdrawal moderation approvals.

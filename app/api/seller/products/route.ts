@@ -45,6 +45,18 @@ export async function POST(req: Request) {
     const pdfFile = formData.get('file') as File | null;
     const coverFile = formData.get('coverFile') as File | null;
 
+    // Collect up to 5 gallery image files
+    const galleryFiles: File[] = [];
+    for (let i = 0; i < 5; i++) {
+      const gf = formData.get(`galleryFile_${i}`);
+      console.log(`galleryFile_${i}:`, gf ? (gf as any).name : 'null');
+      if (gf && typeof (gf as File).arrayBuffer === 'function') galleryFiles.push(gf as File);
+    }
+    console.log('Total gallery files found:', galleryFiles.length);
+    // Also collect gallery URL inputs (optional fallback)
+    const galleryUrlsRaw = (formData.get('galleryUrls') as string) || '';
+    const galleryUrlsInput = galleryUrlsRaw.split('\n').map(u => u.trim()).filter(Boolean).slice(0, 5);
+
     if (!title || !shortDesc || !priceStr) {
       return NextResponse.json({ error: 'Title, short description, and price are required' }, { status: 400 });
     }
@@ -72,6 +84,15 @@ export async function POST(req: Request) {
       coverImage = `/api/download/preview?key=${encodeURIComponent(uploadCover.fileKey)}`;
     }
 
+    // Upload gallery images
+    const galleryImageUrls: string[] = [...galleryUrlsInput];
+    for (const gFile of galleryFiles) {
+      if (galleryImageUrls.length >= 5) break;
+      const gBuffer = Buffer.from(await gFile.arrayBuffer());
+      const gUpload = await storage.upload(gBuffer, gFile.name, 'previews');
+      galleryImageUrls.push(`/api/download/preview?key=${encodeURIComponent(gUpload.fileKey)}`);
+    }
+
     const baseSlug = title
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, '-')
@@ -94,7 +115,8 @@ export async function POST(req: Request) {
         tags,
         sellerId: user.id,
         shareKey,
-        status: 'APPROVED', // Ready to sell immediately
+        galleryImages: JSON.stringify(galleryImageUrls),
+        status: 'PENDING',
       },
     });
 

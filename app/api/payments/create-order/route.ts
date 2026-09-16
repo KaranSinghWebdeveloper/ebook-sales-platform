@@ -53,9 +53,9 @@ export async function POST(req: Request) {
       razorpayOrderId: rzpOrder.id,
       amount: rzpOrder.amount, // in paise
       currency: 'INR',
-      keyId: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || 'rzp_test_sample_key_123',
+      keyId: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || '',
       productTitle: product.title,
-      isSimulated: rzpOrder.isSimulated,
+      isSimulated: false,
     });
   } catch (error) {
     console.error('Payment order creation error:', error);

@@ -64,7 +64,7 @@ export function Footer({ siteName = 'DigiVault' }: { siteName?: string }) {
         {/* Main Footer Links */}
         <div style={{
           display: 'grid',
-          gridTemplateColumns: '2fr 1fr 1fr 1fr',
+          gridTemplateColumns: '2fr 1fr 1fr',
           gap: '3rem',
           marginBottom: '3rem',
         }}>
@@ -103,20 +103,9 @@ export function Footer({ siteName = 'DigiVault' }: { siteName?: string }) {
           <div>
             <div style={{ fontWeight: 700, fontSize: '0.92rem', marginBottom: '1rem', color: 'var(--text-primary)' }}>Sellers</div>
             <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '0.6rem', fontSize: '0.85rem', color: 'var(--text-muted)' }}>
-              <li><Link href="/dashboard/upload">Upload New Product</Link></li>
-              <li><Link href="/dashboard/links">Ad Campaign Link Generator</Link></li>
-              <li><Link href="/dashboard/earnings">Wallet & Withdrawals</Link></li>
               <li><Link href="/register?role=SELLER">Become a Seller</Link></li>
-            </ul>
-          </div>
-
-          <div>
-            <div style={{ fontWeight: 700, fontSize: '0.92rem', marginBottom: '1rem', color: 'var(--text-primary)' }}>Administration</div>
-            <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '0.6rem', fontSize: '0.85rem', color: 'var(--text-muted)' }}>
-              <li><Link href="/admin">Super Admin Portal</Link></li>
-              <li><Link href="/admin/appearance">Dynamic Theme Editor</Link></li>
-              <li><Link href="/admin/commissions">Commission Split Manager</Link></li>
-              <li><Link href="/admin/withdrawals">Payout Approvals</Link></li>
+              <li><Link href="/login">Seller Sign In</Link></li>
+              <li><Link href="/store">Browse All Products</Link></li>
             </ul>
           </div>
         </div>

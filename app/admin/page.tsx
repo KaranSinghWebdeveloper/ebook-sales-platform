@@ -37,6 +37,7 @@ export default function SuperAdminPage() {
 
   const [withdrawals, setWithdrawals] = useState<any[]>([]);
   const [products, setProducts] = useState<any[]>([]);
+  const [filterSeller, setFilterSeller] = useState<string>('ALL');
 
   const showToast = (msg: string) => {
     setToastMessage(msg);
@@ -589,9 +590,23 @@ export default function SuperAdminPage() {
 
       {activeTab === 'products' && (
         <div className="glass-panel" style={{ padding: '2rem', borderRadius: '16px' }}>
-          <h2 style={{ fontSize: '1.3rem', fontWeight: 700, marginBottom: '1.25rem' }}>
-            System-Wide Products & Moderation
-          </h2>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', flexWrap: 'wrap', gap: '1rem' }}>
+            <h2 style={{ fontSize: '1.3rem', fontWeight: 700 }}>
+              System-Wide Products & Moderation
+            </h2>
+            <select 
+              className="form-select" 
+              style={{ width: 'auto', minWidth: '200px' }}
+              value={filterSeller}
+              onChange={(e) => setFilterSeller(e.target.value)}
+            >
+              <option value="ALL">All Sellers</option>
+              {Array.from(new Set(products.map(p => p.sellerId))).map(sellerId => {
+                const p = products.find(prod => prod.sellerId === sellerId);
+                return <option key={sellerId} value={sellerId}>{p?.seller?.storeName || p?.seller?.name}</option>;
+              })}
+            </select>
+          </div>
           <div style={{ overflowX: 'auto' }}>
             <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.9rem' }}>
               <thead>
@@ -605,7 +620,7 @@ export default function SuperAdminPage() {
                 </tr>
               </thead>
               <tbody>
-                {products.map((p) => (
+                {products.filter(p => filterSeller === 'ALL' || p.sellerId === filterSeller).map((p) => (
                   <tr key={p.id} style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.05)' }}>
                     <td style={{ padding: '1rem', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
                       <img

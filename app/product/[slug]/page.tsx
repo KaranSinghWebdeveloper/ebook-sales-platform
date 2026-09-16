@@ -44,9 +44,23 @@ export default async function ProductPage({ params }: ProductPageProps) {
     },
   });
 
-  if (!product || product.status !== 'APPROVED') {
+  if (!product || (product.status !== 'APPROVED' && product.status !== 'PENDING')) {
     notFound();
   }
 
-  return <ProductDetailView product={product} />;
+  // Fetch related products from same category, excluding current
+  const related = await prisma.product.findMany({
+    where: {
+      status: 'APPROVED',
+      category: product.category,
+      id: { not: product.id },
+    },
+    take: 4,
+    orderBy: { totalSales: 'desc' },
+    include: {
+      seller: { select: { name: true, storeName: true, avatar: true } },
+    },
+  });
+
+  return <ProductDetailView product={product} relatedProducts={related} />;
 }

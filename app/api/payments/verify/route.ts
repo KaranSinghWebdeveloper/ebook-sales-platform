@@ -33,8 +33,8 @@ export async function POST(req: Request) {
 
     const isValid = verifyPaymentSignature(
       razorpayOrderId,
-      razorpayPaymentId || 'pay_simulated',
-      razorpaySignature || 'sig_simulated'
+      razorpayPaymentId,
+      razorpaySignature
     );
 
     if (!isValid) {
@@ -55,7 +55,7 @@ export async function POST(req: Request) {
         where: { id: order.id },
         data: {
           status: 'PAID',
-          razorpayPaymentId: razorpayPaymentId || 'pay_simulated_' + Date.now(),
+          razorpayPaymentId: razorpayPaymentId,
         },
       }),
       prisma.user.update({
@@ -77,7 +77,7 @@ export async function POST(req: Request) {
           orderId: order.id,
           productId: order.productId,
           expiresAt,
-          maxDownloads: 5,
+          maxDownloads: 1,
         },
       }),
     ]);
