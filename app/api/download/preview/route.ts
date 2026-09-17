@@ -30,7 +30,7 @@ export async function GET(req: NextRequest) {
     else if (ext === '.svg') contentType = 'image/svg+xml';
     else if (ext === '.pdf') contentType = 'application/pdf';
 
-    return new NextResponse(buffer, {
+    return new NextResponse(buffer as any, {
       headers: {
         'Content-Type': contentType,
         'Cache-Control': 'public, max-age=31536000, immutable',

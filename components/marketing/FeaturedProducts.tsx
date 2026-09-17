@@ -30,11 +30,7 @@ export async function FeaturedProducts() {
           </Link>
         </div>
 
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-          gap: '2rem',
-        }}>
+        <div className="store-grid">
           {products.map((product) => (
             <ProductCard key={product.id} product={product} />
           ))}
